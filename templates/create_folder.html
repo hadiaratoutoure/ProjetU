@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un dossier d'upload</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+    function toggleGroups() {
+        var cb = document.getElementById('restricted');
+        var sel = document.getElementById('allowed_groups_block');
+        sel.style.display = cb.checked ? '' : 'none';
+    }
+    </script>
+</head>
+<body>
+    <div class="dashboard-container" style="max-width:480px; margin-top:48px;">
+        <h2><span style="font-size:1.3em; margin-right:8px;">📁</span>Créer un dossier d'upload</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="notif-message notif-{{ category }}" style="margin-bottom:12px;">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <form method="post">
+            <label for="path">Chemin du dossier à créer :</label>
+            <input type="text" id="path" name="path" required placeholder="Ex : DFS/Applications/monProjet">
+            <div style="margin:12px 0;">
+                <input type="checkbox" id="restricted" name="restricted" onclick="toggleGroups()">
+                <label for="restricted">Accès restreint</label>
+            </div>
+            <div id="allowed_groups_block" style="display:none; margin-bottom:12px;">
+                <label for="allowed_groups">Groupes autorisés :</label>
+                <select id="allowed_groups" name="allowed_groups" multiple size="3" style="width:100%; border-radius:6px;">
+                    {% for group in all_groups %}
+                        <option value="{{ group }}">{{ group }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <label for="description">Description (optionnelle) :</label>
+            <textarea id="description" name="description" rows="2" style="width:100%;border-radius:6px;"></textarea>
+            <button type="submit">Créer le dossier</button>
+            <a href="/dashboard" style="margin-left:18px; color:#4299e1;">Annuler</a>
+        </form>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,254 @@
+body {
+    font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+    background: #f8fafc;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+.dashboard-container {
+    background: #fff;
+    max-width: 600px;
+    margin: 48px auto 0 auto;
+    padding: 36px 40px 32px 40px;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.10);
+    position: relative;
+    transition: box-shadow 0.3s;
+}
+.dashboard-container:hover {
+    box-shadow: 0 16px 40px rgba(31, 38, 135, 0.13);
+}
+h2 {
+    text-align: center;
+    color: #1a365d;
+    margin-bottom: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+h3 {
+    color: #2b6cb0;
+    margin-top: 28px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+input[type="text"], input[type="password"], input[type="file"], textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0 18px 0;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f1f5f9;
+    font-size: 15px;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+input[type="text"]:focus, input[type="password"]:focus, input[type="file"]:focus, textarea:focus {
+    border: 1.5px solid #38b2ac;
+    outline: none;
+    box-shadow: 0 0 0 2px #81e6d9;
+}
+button {
+    width: auto;
+    min-width: 120px;
+    padding: 12px 28px;
+    background: linear-gradient(90deg, #38b2ac 0%, #4299e1 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(31, 38, 135, 0.07);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+button:hover {
+    background: linear-gradient(90deg, #4299e1 0%, #38b2ac 100%);
+    box-shadow: 0 4px 16px rgba(31, 38, 135, 0.12);
+    transform: translateY(-2px) scale(1.03);
+}
+.flashes {
+    color: #e53e3e;
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 8px;
+    padding: 10px 18px;
+    margin-bottom: 18px;
+    list-style: none;
+    font-size: 15px;
+}
+a {
+    color: #4299e1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+a:hover {
+    color: #1a365d;
+    text-decoration: underline;
+}
+ul {
+    padding-left: 18px;
+    margin-bottom: 12px;
+}
+li {
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #1a365d;
+    background: #f1f5f9;
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(66,153,225,0.04);
+    transition: background 0.2s;
+}
+li:hover {
+    background: #e6fffa;
+}
+li button {
+    min-width: 80px;
+    padding: 7px 14px;
+    font-size: 14px;
+    margin: 0 0 0 12px;
+    background: #e53e3e;
+    background: linear-gradient(90deg, #e53e3e 0%, #f6ad55 100%);
+    border-radius: 6px;
+    box-shadow: none;
+    font-weight: 500;
+}
+li button:hover {
+    background: #c53030;
+    background: linear-gradient(90deg, #c53030 0%, #e53e3e 100%);
+}
+#previewZone {
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 18px;
+    min-height: 40px;
+    box-shadow: 0 1px 3px rgba(66,153,225,0.04);
+    text-align: center;
+}
+@media (max-width: 700px) {
+    .dashboard-container {
+        max-width: 98vw;
+        padding: 18px 4vw 18px 4vw;
+    }
+    h2, h3 {
+        font-size: 1.2em;
+    }
+    button {
+        min-width: 90px;
+        font-size: 15px;
+    }
+}
+.notif-success {
+    background: #e6fffa !important;
+    border-color: #38a169 !important;
+    color: #22543d !important;
+}
+.notif-warning {
+    background: #fffbea !important;
+    border-color: #d69e2e !important;
+    color: #744210 !important;
+}
+.notif-error {
+    background: #fff5f5 !important;
+    border-color: #e53e3e !important;
+    color: #742a2a !important;
+}
+nav {
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.6;
+    background: linear-gradient(135deg, #11998e 0%, #38a1db 100%);
+    box-shadow: 0 8px 32px rgba(17,153,142,0.18);
+    border-radius: 28px 0 0 28px;
+    min-height: 80vh;
+    margin: 18px 0 18px 12px;
+    padding: 36px 0 36px 0;
+    position: relative;
+    backdrop-filter: blur(6px);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+nav h3, nav .groups-title {
+    font-size: 1.35em;
+}
+nav .user-block, nav .logout-block {
+    font-size: 18px;
+}
+nav .user-block .icon {
+    font-size: 20px;
+    margin-right: 4px;
+}
+nav .logout-block a {
+    color: #fff;
+    text-decoration: underline;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+}
+nav .logout-block a:hover {
+    color: #f6ad55;
+}
+nav .groups-block {
+    margin-left: 24px;
+    margin-bottom: 18px;
+}
+nav .groups-block .groups-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #e6fffa;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+nav ul {
+    padding-left: 0;
+    list-style: none;
+    color: #fff;
+    margin-bottom: 0;
+}
+nav ul li.group-select {
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    border-radius: 8px;
+    padding: 6px 14px;
+    margin-bottom: 6px;
+    font-size: 17px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 1px 3px rgba(66,153,225,0.08);
+    outline: none;
+}
+nav ul li.group-select:hover, nav ul li.group-select:focus {
+    background: #fff;
+    color: #4299e1;
+    box-shadow: 0 2px 8px rgba(66,153,225,0.13);
+    text-decoration: none;
+    cursor: pointer;
+}
+nav ul li.group-select:active {
+    background: #bee3f8;
+    color: #2b6cb0;
+}
+nav hr {
+    border: none;
+    height: 9px;
+    width: 80%;
+    margin: 18px auto;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #4299e1 0%, #90cdf4 100%);
+    opacity: 0.97;
+} 

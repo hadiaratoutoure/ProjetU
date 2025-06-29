@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de bord</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js"></script>
+</head>
+<body data-groups='{{ groups|tojson }}'>
+    <div style="display: flex; flex-direction: row; min-height: 80vh;">
+        {% if groups and groups|length > 0 %}
+        <nav style="min-width: 180px; background: linear-gradient(135deg, #11998e 0%, #38a1db 100%); color: #fff; border-radius: 28px 0 0 28px; box-shadow: 0 8px 32px rgba(17,153,142,0.18); padding: 36px 0 36px 0; display: flex; flex-direction: column; align-items: flex-start; position: relative; backdrop-filter: blur(6px); border: 1.5px solid rgba(255,255,255,0.18); margin: 18px 0 18px 12px; height: calc(100vh - 36px);">
+            <h3><span class="icon">📋</span>Menu</h3>
+            {% if 'Gestion Portail Upload' in groups %}
+            <form method="get" action="/dashboard" style="margin-left:24px; margin-bottom:12px; width:80%;">
+                <input type="hidden" name="create_folder" value="1">
+                <button type="submit" style="width:100%; background:#38a169; color:#fff; border:none; border-radius:8px; padding:10px 0; font-size:17px; font-weight:700; box-shadow:0 2px 8px rgba(56,161,105,0.10); cursor:pointer;">CRÉER UN DOSSIER</button>
+            </form>
+            <form method="get" action="/dashboard" style="margin-left:24px; margin-bottom:12px; width:80%;">
+                <input type="hidden" name="edit_upload_path" value="1">
+                <button type="submit" style="width:100%; background:#3182ce; color:#fff; border:none; border-radius:8px; padding:10px 0; font-size:17px; font-weight:700; box-shadow:0 2px 8px rgba(49,130,206,0.10); cursor:pointer;">MODIFIER CHEMIN UPLOAD</button>
+            </form>
+            <form method="get" action="/statistics" style="margin-left:24px; margin-bottom:18px; width:80%;">
+                <button type="submit" style="width:100%; background:#805ad5; color:#fff; border:none; border-radius:8px; padding:10px 0; font-size:17px; font-weight:700; box-shadow:0 2px 8px rgba(128,90,213,0.10); cursor:pointer;">📊 STATISTIQUES</button>
+            </form>
+            {% endif %}
+            <div class="user-block"><span class="icon">👤</span>Bienvenue, {{ username }} !</div>
+            <div class="logout-block"><a href="/logout"><span class="icon">🚪</span>Déconnexion</a></div>
+            <hr>
+            <div class="groups-block">
+                <div class="groups-title"><span class="icon">👥</span>UPLOAD</div>
+                <ul>
+                    {% for group in groups %}
+                        <li class="group-select" data-group="{{ group }}"><span class="icon">📁</span> {{ group }}</li>
+                    {% else %}
+                        <li style="background:none; color:#fff; padding:0;">Aucun groupe attribué.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </nav>
+        {% endif %}
+        <div style="flex:1; padding-left:32px;">
+            {% if show_create_folder %}
+            <div style="display:flex; flex-direction:row; align-items:flex-start; gap:32px;">
+                <div class="dashboard-container" style="max-width:480px; margin-top:48px; flex:2;">
+                    <h2><span style="font-size:1.3em; margin-right:8px;">📁</span>Créer un dossier d'upload</h2>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <div class="notif-message notif-{{ category }}" style="margin-bottom:12px;">{{ message }}</div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                    <form method="post" action="/create_folder">
+                        <label for="path">Chemin du dossier à créer :</label>
+                        <input type="text" id="path" name="path" required placeholder="Ex : DFS/Applications/monProjet">
+                        <div style="margin:12px 0;">
+                            <input type="checkbox" id="restricted" name="restricted" onclick="document.getElementById('allowed_groups_block').style.display = this.checked ? '' : 'none';">
+                            <label for="restricted">Accès restreint</label>
+                        </div>
+                        <div id="allowed_groups_block" style="display:none; margin-bottom:12px;">
+                            <label for="allowed_groups">Groupes autorisés :</label>
+                            <select id="allowed_groups" name="allowed_groups" multiple size="3" style="width:100%; border-radius:6px;">
+                                {% for group in all_groups %}
+                                    <option value="{{ group }}">{{ group }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <label for="description">Description (optionnelle) :</label>
+                        <textarea id="description" name="description" rows="2" style="width:100%;border-radius:6px;"></textarea>
+                        <button type="submit">Créer le dossier</button>
+                        <a href="/dashboard" style="margin-left:18px; color:#4299e1;">Annuler</a>
+                        <a href="/dashboard" style="display:inline-block; margin-left:18px; color:#2b6cb0; font-weight:600; text-decoration:underline;">&#8592; Retour au menu</a>
+                    </form>
+                </div>
+                <div id="process-block-folder" style="flex:1; min-width:220px; max-width:350px; background:#f1f5f9; border:1.5px solid #cbd5e1; color:#2b6cb0; border-radius:10px; box-shadow:0 2px 8px rgba(66,153,225,0.07); padding:14px 18px; font-size:15px; font-weight:500; margin-bottom:8px; margin-top:48px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                        <div style="font-size:1.1em; font-weight:600; color:#2b6cb0;">Processus de traitement</div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button id="toggle-folder-history-btn" type="button" style="background:#4299e1; color:#fff; border:none; border-radius:6px; padding:4px 10px; font-size:13px; cursor:pointer; font-weight:500;">Masquer l'historique</button>
+                            {% if folder_actions and folder_actions|length > 0 %}
+                            <form method="post" action="/clear_folder_history" style="margin:0;">
+                                <button type="submit" style="background:#e53e3e; color:#fff; border:none; border-radius:6px; padding:4px 12px; font-size:13px; cursor:pointer; font-weight:500;">Effacer l'historique</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div id="folder-history-list-block">
+                    {% if folder_actions and folder_actions|length > 0 %}
+                      <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:13px; background:#f7fafc; border-radius:8px; box-shadow:0 1px 3px rgba(66,153,225,0.04);">
+                          <thead>
+                            <tr style="background:#e6fffa; color:#22543d;">
+                              <th style="padding:6px 8px; border-bottom:1.5px solid #bee3f8;">Date</th>
+                              <th style="padding:6px 8px; border-bottom:1.5px solid #bee3f8;">Utilisateur</th>
+                              <th style="padding:6px 8px; border-bottom:1.5px solid #bee3f8;">Chemin</th>
+                              <th style="padding:6px 8px; border-bottom:1.5px solid #bee3f8;">Statut</th>
+                              <th style="padding:6px 8px; border-bottom:1.5px solid #bee3f8;">Message</th>
+                              <th style="padding:6px 8px; border-bottom:1.5px solid #bee3f8;">Description</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for action in folder_actions|reverse %}
+                            <tr>
+                              <td style="padding:4px 8px; color:#718096;">{{ action.date }}</td>
+                              <td style="padding:4px 8px; font-weight:600;">{{ action.user }}</td>
+                              <td style="padding:4px 8px; color:#2b6cb0;">{{ action.path }}</td>
+                              <td style="padding:4px 8px; font-weight:600; {% if action.type == 'success' %}color:#38a169;{% else %}color:#e53e3e;{% endif %}">{{ action.type }}</td>
+                              <td style="padding:4px 8px;">{{ action.msg }}</td>
+                              <td style="padding:4px 8px; color:#4299e1;">{{ action.desc }}</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    {% else %}
+                      <div style="font-size:14px; color:#718096;">Aucune action pour l'instant.</div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% elif show_edit_upload_path %}
+            <div class="dashboard-container" style="max-width:480px; margin-top:48px;">
+                <h2><span style="font-size:1.3em; margin-right:8px;">📝</span>Modifier un chemin d'upload</h2>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="notif-message notif-{{ category }}" style="margin-bottom:12px;">{{ message }}</div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+                <form method="post" action="/edit_upload_path">
+                    <label for="edit_path">Chemin d'upload à modifier :</label>
+                    <input type="text" id="edit_path" name="edit_path" required placeholder="Ex : DFS/Applications/monProjet">
+                    <label for="edit_groups">Groupes autorisés :</label>
+                    <select id="edit_groups" name="edit_groups" multiple size="3" style="width:100%; border-radius:6px;">
+                        {% for group in all_groups %}
+                            <option value="{{ group }}">{{ group }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="edit_description">Description (optionnelle) :</label>
+                    <textarea id="edit_description" name="edit_description" rows="2" style="width:100%;border-radius:6px;"></textarea>
+                    <button type="submit">Valider</button>
+                    <a href="/dashboard" style="margin-left:18px; color:#2b6cb0; font-weight:600; text-decoration:underline;">&#8592; Retour au menu</a>
+                </form>
+            </div>
+            {% else %}
+            <div id="waiting-block" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; background: #f1f5f9; border-radius: 14px; box-shadow: 0 2px 8px rgba(66,153,225,0.07); margin-top: 40px; margin-bottom: 40px;">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#4299e1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <div style="font-size: 1.3em; color: #2b6cb0; margin-top: 18px; font-weight: 600;">En attente d'upload</div>
+                <div style="color: #4a5568; margin-top: 8px;">Veuillez sélectionner un groupe à gauche pour commencer un upload.</div>
+            </div>
+            <div id="upload-block" style="display:none;">
+              <div style="display:flex; flex-direction:row; align-items:flex-start; gap:32px;">
+                <div style="flex:2; min-width:0;">
+                  <div id="notif-block" style="display:flex; flex-direction:row; justify-content:flex-end; margin-top:10px;">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <div class="notif-message notif-{{ category }}" style="min-width:220px; max-width:350px; background:#f7fafc; border:1.5px solid #4299e1; color:#2b6cb0; border-radius:10px; box-shadow:0 2px 8px rgba(66,153,225,0.07); padding:18px 22px; font-size:15px; font-weight:500; margin-left:24px; margin-bottom:8px; display:flex; align-items:center;">
+                            {% if category == 'success' %}
+                              <span style="font-size:20px; color:#38a169; margin-right:10px;">&#10003;</span>
+                            {% elif category == 'warning' %}
+                              <span style="font-size:20px; color:#d69e2e; margin-right:10px;">&#9888;</span>
+                            {% elif category == 'error' %}
+                              <span style="font-size:20px; color:#e53e3e; margin-right:10px;">&#10060;</span>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                  </div>
+                  <h3 id="upload-section">Uploader un fichier</h3>
+                  <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                      <input type="file" id="fileInput" name="file" multiple required>
+                      <ul id="fileList"></ul>
+                      <div id="previewZone" style="margin-bottom:12px;"></div>
+                      <label for="description">Description (optionnelle) :</label>
+                      <textarea id="description" name="description" rows="2" style="width:100%;margin-bottom:10px;border-radius:6px;border:1.5px solid #e2e8f0;background:#f1f5f9;font-size:15px;"></textarea>
+                      <button type="submit">Uploader</button>
+                  </form>
+                </div>
+                <div id="process-block" style="flex:1; min-width:220px; max-width:350px; background:#f1f5f9; border:1.5px solid #cbd5e1; color:#2b6cb0; border-radius:10px; box-shadow:0 2px 8px rgba(66,153,225,0.07); padding:14px 18px; font-size:15px; font-weight:500; margin-bottom:8px; margin-top:10px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                    <div style="font-size:1.1em; font-weight:600; color:#2b6cb0;">Processus de traitement</div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <button id="toggle-history-btn" type="button" style="background:#4299e1; color:#fff; border:none; border-radius:6px; padding:4px 10px; font-size:13px; cursor:pointer; font-weight:500;">Masquer l'historique</button>
+                      {% if actions and actions|length > 0 %}
+                      <form method="post" action="/clear_history" style="margin:0;">
+                          <button type="submit" style="background:#e53e3e; color:#fff; border:none; border-radius:6px; padding:4px 12px; font-size:13px; cursor:pointer; font-weight:500;">Effacer l'historique</button>
+                      </form>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div id="history-list-block">
+                  {% if actions and actions|length > 0 %}
+                    <ul style="padding-left:0; list-style:none;">
+                      {% for action in actions|reverse %}
+                        <li class="notif-{{ action.type }}" style="margin-bottom:6px; display:flex; align-items:center; background:none; border:none; padding:0;">
+                          {% if action.type == 'success' %}
+                            <span style="font-size:17px; color:#38a169; margin-right:7px;">&#10003;</span>
+                          {% elif action.type == 'warning' %}
+                            <span style="font-size:17px; color:#d69e2e; margin-right:7px;">&#9888;</span>
+                          {% elif action.type == 'error' %}
+                            <span style="font-size:17px; color:#e53e3e; margin-right:7px;">&#10060;</span>
+                          {% endif %}
+                          <span style="font-size:13px; color:#718096; margin-right:7px;">[{{ action.time }}]</span>
+                          <span>{{ action.msg }}</span>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <div style="font-size:14px; color:#718096;">Aucune action pour l'instant.</div>
+                  {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var toggleFolderBtn = document.getElementById('toggle-folder-history-btn');
+        var folderHistoryBlock = document.getElementById('folder-history-list-block');
+        if (toggleFolderBtn && folderHistoryBlock) {
+            toggleFolderBtn.onclick = function() {
+                if (folderHistoryBlock.style.display === 'none') {
+                    folderHistoryBlock.style.display = '';
+                    toggleFolderBtn.textContent = "Masquer l'historique";
+                } else {
+                    folderHistoryBlock.style.display = 'none';
+                    toggleFolderBtn.textContent = "Afficher l'historique";
+                }
+            };
+        }
+    }, 200);
+});
+</script>
+</html> 
