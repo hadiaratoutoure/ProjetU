@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Portail Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🚀 Portail Upload</h1>
+                <div class="user-info">
+                    <span class="welcome">Bienvenue, {{ display_name }}!</span>
+                    <div class="user-details">
+                        <span class="username">@{{ username }}</span>
+                        <span class="groups">Groupes: {{ ', '.join(groups) if groups else 'Aucun' }}</span>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">Déconnexion</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <h3>📁 Navigation</h3>
+                    <a href="{{ url_for('dashboard') }}" class="nav-item active">
+                        <span class="icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('dashboard', create_folder=1) }}" class="nav-item">
+                        <span class="icon">📁</span>
+                        Créer Dossier
+                    </a>
+                    <a href="{{ url_for('dashboard', edit_upload_path=1) }}" class="nav-item">
+                        <span class="icon">⚙️</span>
+                        Modifier Chemin
+                    </a>
+                </div>
+                
+                {% if 'admin' in groups %}
+                <div class="nav-section">
+                    <h3>🔧 Administration</h3>
+                    <a href="{{ url_for('statistics') }}" class="nav-item">
+                        <span class="icon">📈</span>
+                        Statistiques
+                    </a>
+                </div>
+                {% endif %}
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <h2>📤 Upload de Fichiers</h2>
+                <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="upload-form">
+                    <div class="form-group">
+                        <label for="file">Sélectionner des fichiers:</label>
+                        <input type="file" id="file" name="file" multiple accept=".txt,.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif" required>
+                        <div class="file-info" id="fileInfo"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description (optionnel):</label>
+                        <textarea id="description" name="description" placeholder="Description des fichiers uploadés..."></textarea>
+                    </div>
+                    
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                    
+                    <button type="submit" class="upload-btn">
+                        <span class="icon">📤</span>
+                        Uploader
+                    </button>
+                </form>
+            </section>
+
+            <!-- Files Section -->
+            <section class="files-section">
+                <h2>📂 Fichiers Disponibles</h2>
+                {% if files %}
+                <div class="files-grid">
+                    {% for file in files %}
+                    <div class="file-card">
+                        <div class="file-icon">
+                            {% if file.endswith(('.jpg', '.jpeg', '.png', '.gif')) %}
+                                🖼️
+                            {% elif file.endswith(('.pdf')) %}
+                                📄
+                            {% elif file.endswith(('.doc', '.docx')) %}
+                                📝
+                            {% elif file.endswith(('.xls', '.xlsx')) %}
+                                📊
+                            {% elif file.endswith(('.txt')) %}
+                                📄
+                            {% else %}
+                                📁
+                            {% endif %}
+                        </div>
+                        <div class="file-info">
+                            <h4>{{ file }}</h4>
+                            <a href="{{ url_for('download_file', group=groups[0] if groups else username, filename=file) }}" class="download-btn">
+                                <span class="icon">⬇️</span>
+                                Télécharger
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📁</div>
+                    <p>Aucun fichier disponible</p>
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- Actions History -->
+            <section class="actions-section">
+                <div class="section-header">
+                    <h2>📋 Historique des Actions</h2>
+                    <form action="{{ url_for('clear_history') }}" method="post" style="display: inline;">
+                        <button type="submit" class="clear-btn">Effacer</button>
+                    </form>
+                </div>
+                
+                {% if actions %}
+                <div class="actions-list" id="actionsList">
+                    {% for action in actions %}
+                    <div class="action-item {{ action.type }}">
+                        <span class="action-time">{{ action.time }}</span>
+                        <span class="action-message">{{ action.msg }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>Aucune action récente</p>
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- Admin Sections -->
+            {% if show_create_folder %}
+            <section class="admin-section">
+                <h2>📁 Créer un Dossier</h2>
+                <form action="{{ url_for('create_folder') }}" method="post" class="admin-form">
+                    <div class="form-group">
+                        <label for="path">Chemin du dossier:</label>
+                        <input type="text" id="path" name="path" placeholder="/chemin/vers/dossier" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="restricted" id="restricted">
+                            Dossier avec restrictions
+                        </label>
+                    </div>
+                    
+                    <div class="form-group" id="groupsSection" style="display: none;">
+                        <label>Groupes autorisés:</label>
+                        <div class="checkbox-group">
+                            {% for group in all_groups %}
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="allowed_groups" value="{{ group }}">
+                                {{ group }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description" placeholder="Description du dossier..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="admin-btn">Créer Dossier</button>
+                </form>
+                
+                {% if folder_actions %}
+                <div class="folder-history">
+                    <h3>Historique des créations</h3>
+                    <div class="folder-actions">
+                        {% for action in folder_actions %}
+                        <div class="folder-action {{ action.type }}">
+                            <span class="date">{{ action.date }}</span>
+                            <span class="user">{{ action.user }}</span>
+                            <span class="path">{{ action.path }}</span>
+                            <span class="message">{{ action.msg }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <form action="{{ url_for('clear_folder_history') }}" method="post">
+                        <button type="submit" class="clear-btn">Effacer l'historique</button>
+                    </form>
+                </div>
+                {% endif %}
+            </section>
+            {% endif %}
+
+            {% if show_edit_upload_path %}
+            <section class="admin-section">
+                <h2>⚙️ Modifier le Chemin d'Upload</h2>
+                <form action="{{ url_for('edit_upload_path') }}" method="post" class="admin-form">
+                    <div class="form-group">
+                        <label for="edit_path">Nouveau chemin:</label>
+                        <input type="text" id="edit_path" name="edit_path" placeholder="/nouveau/chemin" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Groupes concernés:</label>
+                        <div class="checkbox-group">
+                            {% for group in all_groups %}
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="edit_groups" value="{{ group }}">
+                                {{ group }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit_description">Description:</label>
+                        <textarea id="edit_description" name="edit_description" placeholder="Description de la modification..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="admin-btn">Modifier</button>
+                </form>
+            </section>
+            {% endif %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html> 
