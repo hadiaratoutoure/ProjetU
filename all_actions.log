@@ -1,0 +1,18 @@
+2025-05-31 23:12:27,charlie,create_folder_success,path=DFS/Applications/modoilkjl, msg=Dossier créé avec succès., desc=kiuytirueyrutyghj
+2025-05-31 23:12:52,charlie,upload_success,CRA-TOURE_Hadiaratou-12-2024-20250102.pdf, 122119, kl`kjml=;:, DFS/Applications/uploadBNP
+2025-05-31 23:14:01,charlie,clear_upload_history,
+2025-05-31 23:42:42,charlie,upload_success,CRA-TOURE_Hadiaratou-12-2024-20250102.pdf, 122119, okijmulygfvg;, DFS/Applications/uploadBNP
+2025-06-01 22:28:56,charlie,edit_upload_path,path=DFS/Applications/Finifac, groupes=['Injection fichier Finifac'], desc=pour upload fichier finifac
+2025-06-01 22:29:19,charlie,upload_success,CRA-TOURE_Hadiaratou-12-2024-20250102.pdf, 122119, jhgjhfghjk, DFS/Applications/uploadBNP
+2025-06-23 13:15:13,charlie,upload_success,OCSI_SAS-RapportActivite-TOURE_Hadiaratou-5-2024.pdf, 140550, jhjk, DFS/Applications/uploadBNP
+2025-06-23 13:15:42,charlie,upload_success,Demande_recours_gracieux_AToure.pdf, 43769, hello, DFS/Applications/uploadBNP
+2025-06-23 13:16:15,charlie,upload_success,Demande_recours_gracieux_AToure.docx, 163992, lkkj, DFS/Applications/uploadBNP
+2025-06-23 13:16:43,charlie,edit_upload_path,path=DFS/Applications/Finifactest, groupes=['Upload Format BNP PARIBAS'], desc=upload
+2025-06-23 13:18:20,charlie,create_folder_error,path=/test/encoreTest, msg=Erreur lors de la création du dossier : [Errno 30] Read-only file system: '/test', desc=mytest
+2025-06-23 13:18:55,charlie,create_folder_success,path=DFS/Applications/modos/testmy, msg=Dossier créé avec succès., desc=testmy
+2025-06-27 23:32:34,charlie,upload_success,CRA-TOURE_Hadiaratou-12-2024-20250102.pdf, 122119, , DFS/Applications/uploadBNP
+2025-06-27 23:33:21,charlie,upload_success,OCSI_SAS-RapportActivite-TOURE_Hadiaratou-5-2024.pdf, 140550, jhegdzauij, DFS/Applications/uploadBNP
+2025-06-27 23:33:21,charlie,upload_success,CRA-TOURE_Hadiaratou-12-2024-20250102.pdf, 122119, jhegdzauij, DFS/Applications/uploadBNP
+2025-06-27 23:48:49,alice,upload_success,CRA-TOURE_Hadiaratou-12-2024-20250102.pdf, 122119, , DFS/Applications/uploadBNP
+2025-06-29 16:39:43,alice,upload_success,CRA-TOURE_Hadiaratou-12-2024-20250102.pdf, 122119, rfegthygrfde, DFS/Applications/uploadBNP
+2025-06-29 16:39:47,alice,clear_upload_history,

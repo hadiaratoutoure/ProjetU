@@ -1,0 +1,5 @@
+{
+  "alice": {"password": "pass123", "groups": ["Upload Format BNP PARIBAS"]},
+  "bob": {"password": "secret", "groups": ["Injection fichier Finifac"]},
+  "charlie": {"password": "azerty", "groups": ["Upload Format BNP PARIBAS", "Injection fichier Finifac", "Gestion Portail Upload"]}
+} 
